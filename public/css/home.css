@@ -1,0 +1,106 @@
+/* Minangmart Shared Design System */
+:root {
+    --navy: #000b1a;
+    --navy-light: #001633;
+    --gold: #d4af37;
+    --gold-bright: #f1c40f;
+    --white: #ffffff;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    background-color: var(--navy);
+    color: var(--white);
+    font-family: 'Outfit', sans-serif;
+    scroll-behavior: smooth;
+}
+
+.text-gold {
+    color: var(--gold);
+}
+
+.bg-gold {
+    background-color: var(--gold);
+}
+
+.border-gold {
+    border-color: var(--gold);
+}
+
+.glass {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+}
+
+.hero-overlay {
+    background: linear-gradient(to bottom, rgba(0, 11, 26, 0.4) 0%, rgba(0, 11, 26, 0.9) 80%, rgba(0, 11, 26, 1) 100%);
+}
+
+.pill-nav {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 0.5rem;
+    scrollbar-width: none;
+}
+
+.pill-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.pill {
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.pill:hover,
+.pill.active {
+    background: var(--gold);
+    color: var(--navy);
+    border-color: var(--gold);
+}
+
+.trending-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.trending-card:hover {
+    transform: translateY(-8px);
+}
+
+.gold-link {
+    color: var(--gold);
+    transition: color 0.3s ease;
+}
+
+.gold-link:hover {
+    color: var(--gold-bright);
+}
+
+.btn-gold {
+    background-color: var(--gold);
+    color: var(--navy);
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+    background-color: var(--gold-bright);
+    transform: scale(1.05);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
