@@ -8,22 +8,48 @@ use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->check()) {
+        $user = auth()->user();
+        if ($user->hasRole('admin')) {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->hasRole('petugas')) {
+            return redirect()->route('petugas.dashboard');
+        } else {
+            return redirect()->route('customer.home');
+        }
+    }
+    
+    $products = \App\Models\Product::withCount('favorites')->withAvg('reviews', 'rating')->latest()->take(8)->get();
+    return view('welcome', compact('products'));
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Admin Dashboard
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->middleware('role:admin')->name('admin.dashboard');
+    Route::get('/admin/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])
+        ->middleware('role:admin')
+        ->name('admin.dashboard');
+
+    // Admin Petugas Management
+    Route::resource('admin/petugas', \App\Http\Controllers\Admin\PetugasController::class)->names([
+        'index' => 'admin.petugas.index',
+        'store' => 'admin.petugas.store',
+        'destroy' => 'admin.petugas.destroy',
+    ])->middleware('role:admin');
+
+    // Admin Activity Logs
+    Route::get('/admin/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])
+        ->middleware('role:admin')
+        ->name('admin.activity_logs.index');
+
+    // Admin Reports
+    Route::get('/admin/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])
+        ->middleware('role:admin')
+        ->name('admin.reports.index');
 
     // Petugas Dashboard
-    Route::get('/petugas/dashboard', function () {
-        $orders = \App\Models\Order::with('items')->latest()->get();
-        $products = \App\Models\Product::latest()->get();
-        $reviews = \App\Models\Review::with(['user', 'product'])->latest()->get();
-        return view('petugas.dashboard', compact('orders', 'products', 'reviews'));
-    })->middleware('role:petugas')->name('petugas.dashboard');
+    Route::get('/petugas/dashboard', [\App\Http\Controllers\Petugas\DashboardController::class, 'index'])
+        ->middleware('role:petugas')
+        ->name('petugas.dashboard');
 
     Route::resource('petugas/products', ProductController::class)->names([
         'index' => 'petugas.products.index',
@@ -34,6 +60,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
+    // QRIS Payment Routes
+    Route::get('/orders/{order}/payment', [OrderController::class, 'showPayment'])->name('orders.payment');
+    Route::post('/orders/{order}/upload-receipt', [OrderController::class, 'uploadReceipt'])->name('orders.uploadReceipt');
+    Route::patch('/orders/{order}/verify-payment', [OrderController::class, 'verifyPayment'])->middleware('role:petugas|admin')->name('orders.verifyPayment');
+    Route::patch('/orders/{order}/reject-payment', [OrderController::class, 'rejectPayment'])->middleware('role:petugas|admin')->name('orders.rejectPayment');
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+
     // Customer Home
     Route::get('/customer/home', function () {
         return view('customer.home');
@@ -43,6 +76,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.update_quantity');
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::get('/cart/count', [CartController::class, 'getCount'])->name('cart.count');
 

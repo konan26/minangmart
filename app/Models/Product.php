@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $fillable = ['name', 'price', 'image', 'description'];
+    protected $fillable = ['name', 'price', 'image', 'description', 'stock'];
 
     public function reviews()
     {
@@ -16,5 +16,13 @@ class Product extends Model
     public function favorites()
     {
         return $this->hasMany(Favorite::class);
+    }
+
+    /**
+     * Check if product is in stock.
+     */
+    public function isInStock(): bool
+    {
+        return $this->stock > 0;
     }
 }

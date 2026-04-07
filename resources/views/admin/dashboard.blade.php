@@ -13,53 +13,23 @@
 </head>
 <body class="bg-[#000b1a] text-white antialiased">
     <!-- Navbar -->
-    <nav class="fixed w-full z-50 glass border-b border-white/10 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-gold rounded-full flex items-center justify-center font-bold text-[#000b1a]">
-                    <i class="fas fa-crown"></i>
-                </div>
-                <span class="text-xl font-bold tracking-wider">ADMIN PANEL</span>
-            </div>
-            
-            <div class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
-                <a href="{{ url('/') }}" class="hover:text-gold transition">VIEW SITE</a>
-                <a href="#" class="text-gold border-b-2 border-gold pb-1 uppercase">DASHBOARD</a>
-                <a href="#" class="hover:text-gold transition uppercase">REPORTS</a>
-                <div class="flex items-center space-x-4 ml-4">
-                    <div class="flex items-center space-x-2 glass px-4 py-2 rounded-full border border-white/10">
-                        <i class="fas fa-user-shield text-gold"></i>
-                        <span class="text-xs font-bold">ADMIN</span>
-                    </div>
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                        @csrf
-                        <button type="submit" class="hover:text-gold transition"><i class="fas fa-sign-out-alt"></i></button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <x-admin.navbar active="dashboard" />
 
     <main class="pt-28 pb-12 px-6">
         <div class="max-w-7xl mx-auto">
             <h1 class="text-4xl font-bold mb-8">System <span class="text-gold">Overview</span></h1>
             
-            @php
-                $allOrders = \App\Models\Order::with(['user', 'items'])->latest()->get();
-                $totalRevenue = $allOrders->where('status', 'completed')->sum('total_price');
-                $totalCustomers = \App\Models\User::role('customer')->count();
-            @endphp
             <!-- Stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                 <div class="glass p-8 rounded-3xl border-l-4 border-gold">
                     <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Total Orders</div>
-                    <div class="text-4xl font-bold">{{ number_format($allOrders->count()) }}</div>
+                    <div class="text-4xl font-bold">{{ number_format($totalOrdersCount) }}</div>
                     <div class="mt-4 text-xs text-gray-500 flex items-center">
                         <i class="fas fa-history mr-1"></i> All time global orders
                     </div>
                 </div>
                 <div class="glass p-8 rounded-3xl border-l-4 border-green-500">
-                    <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Total Revenue (COD)</div>
+                    <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Total Revenue (QRIS)</div>
                     <div class="text-4xl font-bold text-gold">Rp {{ number_format($totalRevenue / 1000000, 1) }}M</div>
                     <div class="mt-4 text-xs text-green-500 flex items-center">
                         <i class="fas fa-check-circle mr-1"></i> Completed transactions
@@ -89,6 +59,7 @@
                                 <th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-gray-400">Items</th>
                                 <th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-gray-400">Amount</th>
                                 <th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-gray-400">Status</th>
+                                <th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-gray-400">Pembayaran</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5">
@@ -126,11 +97,43 @@
                                         {{ $order->status }}
                                     </span>
                                 </td>
+                                <td class="px-8 py-6">
+                                    @if($order->payment_status === 'awaiting_payment')
+                                        <span class="px-3 py-1 rounded-full bg-orange-400/10 text-orange-400 text-[9px] font-black uppercase ring-1 ring-orange-400/20">Belum Bayar</span>
+                                    @elseif($order->payment_status === 'verifying')
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-3 py-1 rounded-full bg-blue-400/10 text-blue-400 text-[9px] font-black uppercase ring-1 ring-blue-400/20">Verifikasi</span>
+                                            @if($order->payment_receipt)
+                                                <a href="{{ asset('storage/' . $order->payment_receipt) }}" target="_blank" class="text-blue-400 hover:text-white transition text-xs" title="Lihat Bukti">
+                                                    <i class="fas fa-image"></i>
+                                                </a>
+                                                <form action="{{ route('orders.verifyPayment', $order->id) }}" method="POST" class="inline">
+                                                    @csrf @method('PATCH')
+                                                    <button type="submit" class="text-emerald-400 hover:text-white text-xs" title="Approve"><i class="fas fa-check"></i></button>
+                                                </form>
+                                                <form action="{{ route('orders.rejectPayment', $order->id) }}" method="POST" class="inline">
+                                                    @csrf @method('PATCH')
+                                                    <button type="submit" class="text-red-400 hover:text-white text-xs" title="Reject"><i class="fas fa-times"></i></button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    @elseif($order->payment_status === 'verified')
+                                        <span class="px-3 py-1 rounded-full bg-emerald-400/10 text-emerald-400 text-[9px] font-black uppercase ring-1 ring-emerald-400/20">Lunas</span>
+                                    @elseif($order->payment_status === 'invalid')
+                                        <span class="px-3 py-1 rounded-full bg-red-400/10 text-red-400 text-[9px] font-black uppercase ring-1 ring-red-400/20">Ditolak</span>
+                                    @endif
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
+                <!-- Pagination -->
+                @if($allOrders->hasPages())
+                    <div class="p-6 border-t border-white/5">
+                        {{ $allOrders->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </main>

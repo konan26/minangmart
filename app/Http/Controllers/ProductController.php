@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -20,7 +21,7 @@ class ProductController extends Controller
             'name' => 'required',
             'price' => 'required|numeric',
             'description' => 'required',
-            'category' => 'required|in:main_course,snack',
+            'stock' => 'required|integer|min:0',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -30,8 +31,14 @@ class ProductController extends Controller
             'name' => $request->name,
             'price' => $request->price,
             'description' => $request->description,
-            'category' => $request->category,
+            'stock' => $request->stock,
             'image' => $imagePath,
+        ]);
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Menambahkan Produk',
+            'details' => "Menambahkan produk baru: {$request->name} (Harga: {$request->price}, Stok: {$request->stock})",
         ]);
 
         return redirect()->back()->with('success', 'Produk berhasil ditambahkan!');
@@ -43,7 +50,7 @@ class ProductController extends Controller
             'name' => 'required',
             'price' => 'required|numeric',
             'description' => 'required',
-            'category' => 'required|in:main_course,snack',
+            'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -51,7 +58,7 @@ class ProductController extends Controller
             'name' => $request->name,
             'price' => $request->price,
             'description' => $request->description,
-            'category' => $request->category,
+            'stock' => $request->stock,
         ];
 
         if ($request->hasFile('image')) {
@@ -64,6 +71,12 @@ class ProductController extends Controller
 
         $product->update($data);
 
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Mengubah Produk',
+            'details' => "Mengubah produk: {$product->name} (Harga: {$request->price}, Stok: {$request->stock})",
+        ]);
+
         return redirect()->back()->with('success', 'Produk berhasil diperbarui!');
     }
 
@@ -72,7 +85,15 @@ class ProductController extends Controller
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }
+        
+        $productName = $product->name;
         $product->delete();
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Menghapus Produk',
+            'details' => "Menghapus produk: {$productName}",
+        ]);
 
         return redirect()->back()->with('success', 'Produk berhasil dihapus!');
     }

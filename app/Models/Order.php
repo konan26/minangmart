@@ -16,6 +16,11 @@ class Order extends Model
         'address',
         'phone_number',
         'notes',
+        'payment_receipt',
+        'payment_status',
+        'courier_type',
+        'shipping_cost',
+        'petugas_id',
     ];
 
     protected $casts = [
@@ -27,6 +32,11 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function petugas()
+    {
+        return $this->belongsTo(User::class, 'petugas_id');
     }
 
     public function items()

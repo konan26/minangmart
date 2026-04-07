@@ -214,13 +214,13 @@
                     <x-input-error :messages="$errors->get('password')" class="mt-1" style="color: #f87171; font-size: 0.75rem; list-style: none; padding: 0;" />
                 </div>
 
-                <!-- Hidden password confirmation matching password for simplicity or add field -->
-                <input type="hidden" name="password_confirmation" id="password_confirmation">
-                <script>
-                    document.getElementById('password').addEventListener('input', function() {
-                        document.getElementById('password_confirmation').value = this.value;
-                    });
-                </script>
+                <!-- Password Confirmation -->
+                <div class="form-group">
+                    <label for="password_confirmation">CONFIRM PASSWORD</label>
+                    <div class="password-container">
+                        <input id="password_confirmation" class="input-pill-dark" type="password" name="password_confirmation" placeholder="••••••••" required autocomplete="new-password">
+                    </div>
+                </div>
 
                 <button type="submit" class="btn-register">
                     REGISTER

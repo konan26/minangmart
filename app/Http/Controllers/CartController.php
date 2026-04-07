@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -20,6 +21,23 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
 
         $id = $request->id;
+
+        // Check stock availability
+        $product = Product::find($id);
+        if (!$product || $product->stock <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Maaf, stok produk ini sudah habis.'
+            ], 400);
+        }
+
+        $currentQty = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
+        if ($currentQty + 1 > $product->stock) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Maaf, stok tersisa hanya ' . $product->stock . ' porsi.'
+            ], 400);
+        }
         
         if(isset($cart[$id])) {
             $cart[$id]['quantity']++;
@@ -53,6 +71,47 @@ class CartController extends Controller
         }
     }
 
+    public function updateQuantity(Request $request)
+    {
+        if ($request->id && $request->action) {
+            $cart = session()->get('cart');
+            if (isset($cart[$request->id])) {
+                $product = Product::find($cart[$request->id]['product_id']);
+                
+                if ($request->action == 'increase') {
+                    if ($product && $product->stock > $cart[$request->id]['quantity']) {
+                        $cart[$request->id]['quantity']++;
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Stok tidak mencukupi.'
+                        ], 400);
+                    }
+                } elseif ($request->action == 'decrease') {
+                    if ($cart[$request->id]['quantity'] > 1) {
+                        $cart[$request->id]['quantity']--;
+                    }
+                }
+                
+                session()->put('cart', $cart);
+                
+                // Calculate new totals
+                $itemTotal = $cart[$request->id]['quantity'] * $cart[$request->id]['price'];
+                $cartTotal = collect($cart)->sum(function($item) {
+                    return $item['price'] * $item['quantity'];
+                });
+
+                return response()->json([
+                    'success' => true,
+                    'quantity' => $cart[$request->id]['quantity'],
+                    'itemTotal' => $itemTotal,
+                    'cartTotal' => $cartTotal
+                ]);
+            }
+        }
+        return response()->json(['success' => false], 400);
+    }
+
     public function checkout(Request $request)
     {
         $cart = session()->get('cart', []);
@@ -60,18 +119,28 @@ class CartController extends Controller
             return back()->with('error', 'Your cart is empty.');
         }
 
+        // Validate stock before checkout
+        foreach ($cart as $id => $item) {
+            $product = Product::find($item['product_id']);
+            if (!$product || $product->stock < $item['quantity']) {
+                $available = $product ? $product->stock : 0;
+                return back()->with('error', "Stok {$item['name']} tidak cukup. Tersisa {$available} porsi.");
+            }
+        }
+
         $totalPrice = 0;
         foreach ($cart as $item) {
             $totalPrice += $item['price'] * $item['quantity'];
         }
 
+        $shippingCost = $request->input('shipping_cost', 0);
+        $totalPrice += $shippingCost;
+
         $user = auth()->user();
 
         DB::beginTransaction();
         try {
-            // No balance deduction - COD only
-
-            // Create Order
+            // Create Order with QRIS payment
             $order = Order::create([
                 'user_id' => $user->id,
                 'total_price' => $totalPrice,
@@ -79,9 +148,12 @@ class CartController extends Controller
                 'address' => $user->address ?? 'No Address Provided',
                 'phone_number' => $user->phone_number,
                 'notes' => $request->notes,
+                'payment_status' => 'awaiting_payment',
+                'courier_type' => $request->input('courier_type', 'standard'),
+                'shipping_cost' => $shippingCost,
             ]);
 
-            // Create Order Items
+            // Create Order Items & deduct stock
             foreach ($cart as $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -91,12 +163,16 @@ class CartController extends Controller
                     'price' => $item['price'],
                     'image' => $item['image'],
                 ]);
+
+                // Deduct stock
+                Product::where('id', $item['product_id'])
+                    ->decrement('stock', $item['quantity']);
             }
 
             session()->forget('cart');
             DB::commit();
 
-            return redirect()->route('customer.orders')->with('success', 'Order placed successfully! Please prepare the cash for COD.');
+            return redirect()->route('orders.payment', $order->id)->with('success', 'Pesanan berhasil dibuat! Silakan lakukan pembayaran via QRIS.');
         } catch (\Exception $e) {
             DB::rollback();
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());

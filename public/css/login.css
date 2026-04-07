@@ -2,8 +2,9 @@ body.login-page {
     background-color: #0b1a33;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
     margin: 0;
     font-family: 'Figtree', sans-serif;
     color: white;
@@ -12,6 +13,7 @@ body.login-page {
 .login-container {
     width: 100%;
     max-width: 400px;
+    margin: auto;
     text-align: center;
     background: rgba(255, 255, 255, 0.03);
     padding: 3rem;

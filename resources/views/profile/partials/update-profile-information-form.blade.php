@@ -6,6 +6,7 @@
     <form method="post" action="{{ route('profile.update') }}" class="space-y-6">
         @csrf
         @method('patch')
+        <input type="hidden" name="redirect_to" value="{{ request('redirect_to') }}">
 
         <div>
             <label class="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-2" for="name">Full Name</label>

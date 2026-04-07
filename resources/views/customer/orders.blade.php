@@ -75,9 +75,38 @@
                                     <p class="text-xs text-gray-500 uppercase tracking-widest">Total Price</p>
                                     <p class="font-black text-gold text-lg">IDR {{ number_format($order->total_price, 0, ',', '.') }}</p>
                                 </div>
-                                <button class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-gold hover:text-navy transition">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
+                                <!-- Payment Status Badge -->
+                                <div class="text-right">
+                                    @if($order->payment_status === 'awaiting_payment' && $order->status !== 'cancelled')
+                                        <div class="flex flex-col gap-2">
+                                            <a href="{{ route('orders.payment', $order->id) }}" class="inline-block px-4 py-2 rounded-full bg-orange-500/10 text-orange-400 text-[10px] font-black uppercase tracking-wider border border-orange-500/20 hover:bg-orange-500/20 transition text-center">
+                                                <i class="fas fa-qrcode mr-1"></i> Bayar Sekarang
+                                            </a>
+                                            <form action="{{ route('orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini? Stok akan dikembalikan.')">
+                                                @csrf
+                                                <button type="submit" class="w-full inline-block px-4 py-2 rounded-full bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-wider border border-red-500/20 hover:bg-red-500/20 transition text-center">
+                                                    <i class="fas fa-times mr-1"></i> Batalkan
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @elseif($order->payment_status === 'verifying')
+                                        <span class="inline-block px-4 py-2 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-wider border border-blue-500/20">
+                                            <i class="fas fa-hourglass-half mr-1"></i> Diverifikasi
+                                        </span>
+                                    @elseif($order->payment_status === 'verified')
+                                        <span class="inline-block px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-wider border border-emerald-500/20">
+                                            <i class="fas fa-check-circle mr-1"></i> Lunas
+                                        </span>
+                                    @elseif($order->payment_status === 'invalid')
+                                        <a href="{{ route('orders.payment', $order->id) }}" class="inline-block px-4 py-2 rounded-full bg-red-500/10 text-red-400 text-[10px] font-black uppercase tracking-wider border border-red-500/20 hover:bg-red-500/20 transition">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i> Upload Ulang
+                                        </a>
+                                    @elseif($order->status === 'cancelled')
+                                        <span class="inline-block px-4 py-2 rounded-full bg-gray-500/10 text-gray-500 text-[10px] font-black uppercase tracking-wider border border-gray-500/20">
+                                            <i class="fas fa-ban mr-1"></i> Dibatalkan
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
 
@@ -137,7 +166,7 @@
                                 <div class="flex items-center justify-between text-sm">
                                     <div class="flex items-center space-x-4">
                                         <div class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
-                                            <img src="{{ $item->image }}" class="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition" alt="{{ $item->product_name }}">
+                                            <img src="{{ str_starts_with($item->image, 'http') ? $item->image : asset('storage/' . $item->image) }}" class="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition" alt="{{ $item->product_name }}">
                                         </div>
                                         <span class="font-bold text-gray-300 group-hover:text-white transition">{{ $item->product_name }}</span>
                                         <span class="text-gray-600">x{{ $item->quantity }}</span>

@@ -122,7 +122,7 @@
                                 <div id="fav-card-{{ $product->id }}" class="group relative bg-white/[0.03] border border-white/5 rounded-[2rem] p-4 hover:border-gold/30 transition duration-500">
                                     <div class="flex items-center space-x-4">
                                         <div class="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
-                                            <img src="{{ $product->image }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt="{{ $product->name }}">
+                                            <img src="{{ str_starts_with($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt="{{ $product->name }}">
                                         </div>
                                         <div class="flex-grow">
                                             <h4 class="font-bold text-lg mb-1">{{ $product->name }}</h4>

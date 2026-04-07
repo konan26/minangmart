@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
@@ -35,7 +33,6 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'phone_number' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['sometimes', 'string', 'in:customer,admin'], // Petugas registered by admin only
         ]);
 
         $user = User::create([
@@ -46,15 +43,8 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $role = $request->role ?? 'customer';
-        $user->assignRole($role);
+        $user->assignRole('customer');
 
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        // Redirect based on role
-        if ($role === 'admin') return redirect(route('admin.dashboard'));
-        return redirect(route('customer.home'));
+        return redirect(route('login'))->with('status', 'Registrasi berhasil! Silakan login untuk melanjutkan.');
     }
 }

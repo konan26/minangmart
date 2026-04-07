@@ -26,6 +26,16 @@ class ReviewController extends Controller
             ]
         );
 
+        if ($request->ajax()) {
+            $product = \App\Models\Product::withCount('reviews')->withAvg('reviews', 'rating')->find($request->product_id);
+            return response()->json([
+                'success' => true,
+                'message' => 'Rating saved!',
+                'avg_rating' => number_format($product->reviews_avg_rating ?? 0, 1),
+                'review_count' => $product->reviews_count
+            ]);
+        }
+
         return back()->with('success', 'Review submitted successfully!');
     }
 }

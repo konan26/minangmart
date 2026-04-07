@@ -50,19 +50,12 @@
         </div>
     </nav>
 
-    <!-- Navigation Pills (Floating Below Navbar) -->
-    <div class="fixed top-20 w-full z-40 hidden md:flex justify-end pr-10">
-        <div class="pill-nav">
-            <a href="#" class="pill active flex items-center"><i class="fas fa-bars mr-2 text-xs"></i> All Menu</a>
-            <a href="#" class="pill">Main Courses</a>
-            <a href="#" class="pill">Snack</a>
-        </div>
-    </div>
+
 
     <!-- Hero Section -->
     <header class="relative h-screen flex items-center justify-center overflow-hidden">
         <!-- Background Image -->
-        <img src="https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?q=80&w=2000&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-60" alt="Minang Cuisine Hero">
+        <img src="https://images.unsplash.com/photo-1600015835779-c6b36ddeac1f?qw=2000&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-60" alt="Minang Cuisine Hero">
         <div class="absolute inset-0 hero-overlay"></div>
         
         <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
@@ -111,39 +104,40 @@
         </div>
 
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-12">
-            <!-- Item 1 -->
-            <div class="group trending-card">
-                <div class="relative overflow-hidden rounded-3xl aspect-square mb-6 border border-white/10">
-                    <img src="https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt="Gulai Ayam">
-                    <div class="absolute top-4 right-4 glass px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase border border-white/20">Trending</div>
+            @forelse($products as $product)
+                <div class="group trending-card relative overflow-hidden glass p-4 rounded-[2.5rem] border border-white/5 hover:border-gold/30 transition">
+                    <div class="relative overflow-hidden rounded-[2rem] aspect-square mb-6">
+                        @if($loop->first)
+                            <div class="absolute top-4 left-4 z-10 glass px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase border border-white/20">Trending</div>
+                        @endif
+                        
+                        <img src="{{ str_starts_with($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt="{{ $product->name }}">
+                        
+                        <!-- Favorite Button (Display Only or Prompt Login) -->
+                        <button onclick="handleGuestAction()" class="absolute top-4 right-4 w-10 h-10 rounded-full glass border border-white/10 flex items-center justify-center text-white hover:text-red-500 transition group/fav">
+                            <i class="fa-regular fa-heart transition-all duration-300"></i>
+                            <span class="absolute -bottom-8 bg-gold text-navy text-[8px] font-black px-2 py-1 rounded hidden group-hover/fav:block">
+                                {{ $product->favorites_count }} FAVORITES
+                            </span>
+                        </button>
+
+                        <!-- Star Rating Display -->
+                        <div class="absolute bottom-4 left-4 glass px-3 py-1 rounded-full border border-white/10 flex items-center space-x-2 text-[10px] font-black">
+                            <i class="fas fa-star text-gold"></i>
+                            <span class="text-gold">{{ number_format($product->reviews_avg_rating ?? 0, 1) }}</span>
+                            <span class="text-gray-400">({{ $product->reviews->count() }})</span>
+                        </div>
+                    </div>
+                    <div class="px-2 pb-2">
+                        <h3 class="font-bold text-xl mb-1">{{ $product->name }}</h3>
+                        <p class="text-gold font-bold tracking-wide">IDR {{ number_format($product->price, 0, ',', '.') }}</p>
+                    </div>
                 </div>
-                <h3 class="font-bold text-xl mb-1">Gulai Ayam</h3>
-                <p class="text-gold font-semibold tracking-wide">IDR 25.000</p>
-            </div>
-            <!-- Item 2 -->
-            <div class="group trending-card">
-                <div class="relative overflow-hidden rounded-3xl aspect-square mb-6 border border-white/10">
-                    <img src="https://images.unsplash.com/photo-1626777557440-2767118129f1?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt="Nasi Rendang">
+            @empty
+                <div class="col-span-full py-20 text-center glass rounded-3xl border border-white/10">
+                    <p class="text-gray-500 uppercase tracking-widest text-xs font-bold">No products available at the moment.</p>
                 </div>
-                <h3 class="font-bold text-xl mb-1">Nasi Rendang</h3>
-                <p class="text-gold font-semibold tracking-wide">IDR 30.000</p>
-            </div>
-            <!-- Item 3 -->
-            <div class="group trending-card">
-                <div class="relative overflow-hidden rounded-3xl aspect-square mb-6 border border-white/10">
-                    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt="Sate Padang">
-                </div>
-                <h3 class="font-bold text-xl mb-1">Sate Padang</h3>
-                <p class="text-gold font-semibold tracking-wide">IDR 30.000</p>
-            </div>
-            <!-- Item 4 -->
-            <div class="group trending-card">
-                <div class="relative overflow-hidden rounded-3xl aspect-square mb-6 border border-white/10">
-                    <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt="Sayur Singkong">
-                </div>
-                <h3 class="font-bold text-xl mb-1">Sayur Singkong</h3>
-                <p class="text-gold font-semibold tracking-wide">IDR 8.000</p>
-            </div>
+            @endforelse
         </div>
     </section>
 
@@ -223,5 +217,34 @@
             </div>
         </div>
     </footer>
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed bottom-8 right-8 z-50 transform translate-y-[200%] opacity-0 transition-all duration-500 pointer-events-none flex items-center gap-3 bg-[#0b1a33] border-l-4 border-gold text-white px-6 py-4 rounded-2xl shadow-[0_0_40px_rgba(212,175,55,0.15)]">
+        <div class="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center">
+            <i class="fas fa-info-circle text-gold text-sm"></i>
+        </div>
+        <div>
+            <p class="font-bold text-sm" id="toast-title">Perhatian!</p>
+            <p class="text-xs text-gray-400" id="toast-message">Silakan login untuk melanjutkan.</p>
+        </div>
+    </div>
+
+    <script>
+        function handleGuestAction() {
+            showToast('Silakan Login/Daftar untuk memberikan Like atau Rating! 😊');
+            setTimeout(() => {
+                window.location.href = "{{ route('login') }}";
+            }, 2000);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.remove('translate-y-[200%]', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-[200%]', 'opacity-0');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>

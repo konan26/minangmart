@@ -7,20 +7,14 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}?v={{ time() }}">
 </head>
 <body class="login-page theme-customer">
     <div class="login-container">
-        <div class="role-tabs">
-            <div class="role-tab active" data-role="customer" onclick="setRole('customer')">CUSTOMER</div>
-            <div class="role-tab" data-role="petugas" onclick="setRole('petugas')">PETUGAS</div>
-            <div class="role-tab" data-role="admin" onclick="setRole('admin')">ADMIN</div>
-        </div>
-
-        <h1 class="login-title">LOGIN</h1>
+        <h1 class="login-title" style="margin-top: 1rem; margin-bottom: 2rem; font-size: 1.8rem; letter-spacing: 2px;">WELCOME</h1>
 
         <div class="logo-circle">
-            <i class="fa-solid fa-utensils" id="role-icon"></i>
+            <i class="fa-solid fa-store" id="role-icon"></i>
         </div>
 
         <!-- Session Status -->
@@ -64,30 +58,5 @@
             </p>
         </div>
     </div>
-    <script>
-        function setRole(role) {
-            document.body.className = 'login-page theme-' + role;
-            
-            // Update Icon
-            const icon = document.getElementById('role-icon');
-            if (role === 'customer') icon.className = 'fa-solid fa-utensils';
-            else if (role === 'petugas') icon.className = 'fa-solid fa-truck-fast';
-            else if (role === 'admin') icon.className = 'fa-solid fa-user-shield';
-
-            // Show/Hide Register Link (Only Customer & Admin can register)
-            const registerLink = document.getElementById('register-link-container');
-            if (role === 'petugas') {
-                registerLink.style.display = 'none';
-            } else {
-                registerLink.style.display = 'block';
-            }
-
-            // Mark active tab
-            document.querySelectorAll('.role-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-        }
-    </script>
 </body>
 </html>
