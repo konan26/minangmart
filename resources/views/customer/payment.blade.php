@@ -63,6 +63,27 @@
                 <p class="text-gray-500 text-sm mt-2">Order <span class="text-gold font-bold">#ORD-{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}</span></p>
             </div>
 
+            <!-- Countdown Timer -->
+            @if($order->payment_status === 'awaiting_payment')
+                <div class="bg-amber-500/10 border border-amber-500/30 rounded-3xl p-6 mb-8 flex items-center justify-between animate-in-delay qris-glow">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-amber-500/20 rounded-2xl flex items-center justify-center mr-4">
+                            <i class="fas fa-clock text-amber-500 text-xl animate-pulse"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-amber-500 uppercase tracking-[0.2em] font-black">Sisa Waktu Pembayaran</p>
+                            <p id="countdown" class="text-2xl font-black text-white tabular-nums mt-1">10:00</p>
+                        </div>
+                    </div>
+                    <div class="text-right hidden sm:block">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold mb-1">Batas Waktu</p>
+                        <p class="text-sm font-black text-gray-300">
+                            {{ $order->created_at->addMinutes(\App\Models\Order::PAYMENT_TIMEOUT_MINUTES)->format('H:i:s') }}
+                        </p>
+                    </div>
+                </div>
+            @endif
+
             <!-- QRIS Card -->
             <div class="glass rounded-[2.5rem] border border-white/10 overflow-hidden qris-glow animate-in-delay">
                 <!-- Order Summary -->
@@ -99,94 +120,8 @@
                 <div class="px-8 py-10 flex flex-col items-center">
                     <p class="text-[10px] text-gray-500 uppercase tracking-[0.3em] font-bold mb-6">Scan QR Code untuk Pembayaran</p>
                     
-                    <div class="bg-white p-6 rounded-3xl pulse-animation mb-6">
-                        <!-- Placeholder QRIS - ganti dengan QR asli -->
-                        <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-                            <!-- QR Code Pattern (Placeholder) -->
-                            <rect width="200" height="200" fill="white"/>
-                            <!-- Position Detection Patterns -->
-                            <rect x="10" y="10" width="50" height="50" fill="#000b1a" rx="4"/>
-                            <rect x="16" y="16" width="38" height="38" fill="white" rx="2"/>
-                            <rect x="22" y="22" width="26" height="26" fill="#000b1a" rx="2"/>
-                            
-                            <rect x="140" y="10" width="50" height="50" fill="#000b1a" rx="4"/>
-                            <rect x="146" y="16" width="38" height="38" fill="white" rx="2"/>
-                            <rect x="152" y="22" width="26" height="26" fill="#000b1a" rx="2"/>
-                            
-                            <rect x="10" y="140" width="50" height="50" fill="#000b1a" rx="4"/>
-                            <rect x="16" y="146" width="38" height="38" fill="white" rx="2"/>
-                            <rect x="22" y="152" width="26" height="26" fill="#000b1a" rx="2"/>
-                            
-                            <!-- Data modules (simplified pattern) -->
-                            <rect x="70" y="10" width="8" height="8" fill="#000b1a"/>
-                            <rect x="86" y="10" width="8" height="8" fill="#000b1a"/>
-                            <rect x="102" y="10" width="8" height="8" fill="#000b1a"/>
-                            <rect x="118" y="10" width="8" height="8" fill="#000b1a"/>
-                            <rect x="70" y="26" width="8" height="8" fill="#000b1a"/>
-                            <rect x="86" y="26" width="8" height="8" fill="#000b1a"/>
-                            <rect x="118" y="26" width="8" height="8" fill="#000b1a"/>
-                            <rect x="70" y="42" width="8" height="8" fill="#000b1a"/>
-                            <rect x="102" y="42" width="8" height="8" fill="#000b1a"/>
-                            
-                            <rect x="10" y="70" width="8" height="8" fill="#000b1a"/>
-                            <rect x="26" y="70" width="8" height="8" fill="#000b1a"/>
-                            <rect x="42" y="70" width="8" height="8" fill="#000b1a"/>
-                            <rect x="70" y="70" width="8" height="8" fill="#000b1a"/>
-                            <rect x="86" y="70" width="8" height="8" fill="#000b1a"/>
-                            <rect x="102" y="70" width="8" height="8" fill="#000b1a"/>
-                            <rect x="118" y="70" width="8" height="8" fill="#000b1a"/>
-                            <rect x="150" y="70" width="8" height="8" fill="#000b1a"/>
-                            <rect x="166" y="70" width="8" height="8" fill="#000b1a"/>
-                            <rect x="182" y="70" width="8" height="8" fill="#000b1a"/>
-                            
-                            <rect x="10" y="86" width="8" height="8" fill="#000b1a"/>
-                            <rect x="42" y="86" width="8" height="8" fill="#000b1a"/>
-                            <rect x="70" y="86" width="8" height="8" fill="#000b1a"/>
-                            <rect x="102" y="86" width="8" height="8" fill="#000b1a"/>
-                            <rect x="134" y="86" width="8" height="8" fill="#000b1a"/>
-                            <rect x="150" y="86" width="8" height="8" fill="#000b1a"/>
-                            <rect x="182" y="86" width="8" height="8" fill="#000b1a"/>
-
-                            <rect x="10" y="102" width="8" height="8" fill="#000b1a"/>
-                            <rect x="26" y="102" width="8" height="8" fill="#000b1a"/>
-                            <rect x="42" y="102" width="8" height="8" fill="#000b1a"/>
-                            <rect x="70" y="102" width="8" height="8" fill="#000b1a"/>
-                            <rect x="86" y="102" width="8" height="8" fill="#000b1a"/>
-                            <rect x="118" y="102" width="8" height="8" fill="#000b1a"/>
-                            <rect x="134" y="102" width="8" height="8" fill="#000b1a"/>
-                            <rect x="166" y="102" width="8" height="8" fill="#000b1a"/>
-                            <rect x="182" y="102" width="8" height="8" fill="#000b1a"/>
-
-                            <rect x="10" y="118" width="8" height="8" fill="#000b1a"/>
-                            <rect x="42" y="118" width="8" height="8" fill="#000b1a"/>
-                            <rect x="86" y="118" width="8" height="8" fill="#000b1a"/>
-                            <rect x="102" y="118" width="8" height="8" fill="#000b1a"/>
-                            <rect x="150" y="118" width="8" height="8" fill="#000b1a"/>
-                            <rect x="182" y="118" width="8" height="8" fill="#000b1a"/>
-                            
-                            <rect x="70" y="140" width="8" height="8" fill="#000b1a"/>
-                            <rect x="86" y="140" width="8" height="8" fill="#000b1a"/>
-                            <rect x="118" y="140" width="8" height="8" fill="#000b1a"/>
-                            <rect x="150" y="140" width="8" height="8" fill="#000b1a"/>
-                            <rect x="166" y="140" width="8" height="8" fill="#000b1a"/>
-                            
-                            <rect x="70" y="156" width="8" height="8" fill="#000b1a"/>
-                            <rect x="102" y="156" width="8" height="8" fill="#000b1a"/>
-                            <rect x="134" y="156" width="8" height="8" fill="#000b1a"/>
-                            <rect x="166" y="156" width="8" height="8" fill="#000b1a"/>
-                            <rect x="182" y="156" width="8" height="8" fill="#000b1a"/>
-                            
-                            <rect x="70" y="172" width="8" height="8" fill="#000b1a"/>
-                            <rect x="86" y="172" width="8" height="8" fill="#000b1a"/>
-                            <rect x="102" y="172" width="8" height="8" fill="#000b1a"/>
-                            <rect x="118" y="172" width="8" height="8" fill="#000b1a"/>
-                            <rect x="150" y="172" width="8" height="8" fill="#000b1a"/>
-                            <rect x="182" y="172" width="8" height="8" fill="#000b1a"/>
-
-                            <!-- QRIS Logo -->
-                            <rect x="75" y="88" width="50" height="24" fill="#d4af37" rx="4"/>
-                            <text x="100" y="104" text-anchor="middle" fill="#000b1a" font-size="11" font-weight="900" font-family="sans-serif">QRIS</text>
-                        </svg>
+                    <div class="bg-white p-4 rounded-3xl pulse-animation mb-6 overflow-hidden">
+                        <img src="{{ asset('images/qris.jpg') }}" alt="QRIS Payment" class="w-full max-w-[280px] mx-auto rounded-xl">
                     </div>
 
                     <p class="text-gold font-black text-sm tracking-wider uppercase">MINANGMART</p>
@@ -319,6 +254,36 @@
     </main>
 
     <script>
+        @if($order->payment_status === 'awaiting_payment')
+            const expiresAt = {{ $order->created_at->addMinutes(\App\Models\Order::PAYMENT_TIMEOUT_MINUTES)->timestamp * 1000 }};
+            
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = expiresAt - now;
+                
+                const countdownEl = document.getElementById('countdown');
+                if (!countdownEl) return;
+
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    countdownEl.innerHTML = "EXPIRED";
+                    countdownEl.classList.add('text-red-500');
+                    window.location.reload();
+                    return;
+                }
+                
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                countdownEl.innerHTML = 
+                    (minutes < 10 ? '0' : '') + minutes + ":" + 
+                    (seconds < 10 ? '0' : '') + seconds;
+            }
+            
+            const timerInterval = setInterval(updateCountdown, 1000);
+            updateCountdown();
+        @endif
+
         const input = document.getElementById('receipt-input');
         const placeholder = document.getElementById('upload-placeholder');
         const preview = document.getElementById('upload-preview');

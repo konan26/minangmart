@@ -51,6 +51,12 @@ class OrderController extends Controller
             abort(403);
         }
 
+        // Check for payment timeout
+        if ($order->isExpired()) {
+            $order->markAsCancelled();
+            return redirect()->route('customer.orders')->with('error', 'Pesanan Anda telah dibatalkan karena batas waktu pembayaran (10 menit) telah habis.');
+        }
+
         return view('customer.payment', compact('order'));
     }
 
@@ -62,6 +68,12 @@ class OrderController extends Controller
         // Ensure the order belongs to the authenticated user
         if ($order->user_id !== auth()->id()) {
             abort(403);
+        }
+
+        // Check for payment timeout before accepting upload
+        if ($order->isExpired()) {
+            $order->markAsCancelled();
+            return redirect()->route('customer.orders')->with('error', 'Maaf, batas waktu pembayaran telah habis dan pesanan telah dibatalkan.');
         }
 
         $request->validate([
@@ -122,19 +134,8 @@ class OrderController extends Controller
             abort(403, 'Pesanan tidak dapat dibatalkan.');
         }
 
-        // Use transaction to ensure data integrity
-        \Illuminate\Support\Facades\DB::transaction(function () use ($order) {
-            // Restore stock for each item
-            foreach ($order->items as $item) {
-                \App\Models\Product::where('id', $item->product_id)->increment('stock', $item->quantity);
-            }
-
-            // Update order status
-            $order->update([
-                'status' => 'cancelled',
-                'payment_status' => 'cancelled' // Optionally handle this in view
-            ]);
-        });
+        // Use refactored method in model
+        $order->markAsCancelled();
 
         return back()->with('success', 'Pesanan berhasil dibatalkan dan stok telah dikembalikan.');
     }
