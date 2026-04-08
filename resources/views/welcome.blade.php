@@ -24,8 +24,8 @@
             
             <div class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
                 <a href="#" class="gold-link">HOME</a>
-                <a href="#menu" class="hover:text-gold transition">MENU</a>
-                <a href="#" class="hover:text-gold transition">ORDER</a>
+                <a href="javascript:void(0)" onclick="handleGuestAction('Silakan login untuk melihat menu!')" class="hover:text-gold transition">MENU</a>
+                <a href="javascript:void(0)" onclick="handleGuestAction('Silakan login untuk melakukan pemesanan!')" class="hover:text-gold transition">ORDER</a>
                 @auth
                     @if(auth()->user()->hasRole('admin'))
                         <a href="{{ route('admin.dashboard') }}" class="hover:text-gold transition uppercase">ADMIN DASHBOARD</a>
@@ -43,8 +43,8 @@
                     <a href="{{ route('register') }}" class="btn-gold uppercase">SIGN UP</a>
                 @endauth
                 <div class="flex items-center space-x-4 ml-4">
-                    <a href="#"><i class="fas fa-shopping-cart text-lg hover:text-gold transition"></i></a>
-                    <a href="#"><i class="fas fa-user-circle text-xl hover:text-gold transition"></i></a>
+                    <a href="javascript:void(0)" onclick="handleGuestAction('Silakan login untuk mengakses keranjang!')"><i class="fas fa-shopping-cart text-lg hover:text-gold transition"></i></a>
+                    <a href="javascript:void(0)" onclick="handleGuestAction('Silakan login untuk melihat profil!')"><i class="fas fa-user-circle text-xl hover:text-gold transition"></i></a>
                 </div>
             </div>
         </div>
@@ -67,8 +67,8 @@
                 Kelezatan tradisi dari Ranah Minang yang melegenda.
             </p>
             <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-6">
-                <a href="#menu" class="btn-gold">Our Favorites</a>
-                <a href="#" class="px-8 py-3 glass rounded-full font-bold text-lg border border-white/20 hover:bg-white/10 transition">Order Online</a>
+                <a href="javascript:void(0)" onclick="handleGuestAction('Silakan login untuk melihat menu favorit!')" class="btn-gold">Our Favorites</a>
+                <a href="javascript:void(0)" onclick="handleGuestAction('Silakan login untuk memesan secara online!')" class="px-8 py-3 glass rounded-full font-bold text-lg border border-white/20 hover:bg-white/10 transition">Order Online</a>
             </div>
         </div>
     </header>
@@ -76,14 +76,14 @@
     <!-- Favorites / Lauk Tambahan Grid -->
     <section class="py-12 px-6 max-w-7xl mx-auto -mt-20 relative z-20">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="glass p-8 rounded-3xl flex items-center justify-between group cursor-pointer hover:border-gold transition">
+            <div onclick="handleGuestAction('Silakan login untuk memesan Menu Favorit!')" class="glass p-8 rounded-3xl flex items-center justify-between group cursor-pointer hover:border-gold transition">
                 <div>
                     <h3 class="text-2xl font-bold mb-1">MENU FAVORIT</h3>
                     <p class="text-gray-400 text-sm uppercase tracking-widest">Aneka Nasi Padang</p>
                 </div>
                 <img src="https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?q=80&w=200&auto=format&fit=crop" class="w-24 h-24 rounded-full object-cover border-4 border-white/10 group-hover:border-gold transition" alt="Favorite">
             </div>
-            <div class="glass p-8 rounded-3xl flex items-center justify-between group cursor-pointer hover:border-gold transition">
+            <div onclick="handleGuestAction('Silakan login untuk memesan Lauk Tambahan!')" class="glass p-8 rounded-3xl flex items-center justify-between group cursor-pointer hover:border-gold transition">
                 <div>
                     <h3 class="text-2xl font-bold mb-1">LAUK TAMBAHAN</h3>
                     <p class="text-gray-400 text-sm uppercase tracking-widest">Sate Padang & Gulai</p>
@@ -147,7 +147,7 @@
             <div class="relative z-10 md:w-3/5 mb-12 md:mb-0 text-center md:text-left">
                 <h2 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">WELCOME <br>BACK <span class="text-gold font-light italic">Citarasa Minang</span></h2>
                 <p class="text-gray-400 text-lg mb-10 max-w-md uppercase tracking-widest font-light">Kelezatan Tradisi dari Ranah Minang</p>
-                <button class="btn-gold px-12 py-4 text-lg">Order Now</button>
+                <button onclick="handleGuestAction('Silakan login untuk mulai memesan!')" class="btn-gold px-12 py-4 text-lg">Order Now</button>
             </div>
             <div class="md:w-2/5 flex justify-center">
                 <div class="relative">
@@ -229,8 +229,8 @@
     </div>
 
     <script>
-        function handleGuestAction() {
-            showToast('Silakan Login/Daftar untuk memberikan Like atau Rating! 😊');
+        function handleGuestAction(message = 'Silakan Login/Daftar untuk memberikan Like atau Rating! 😊') {
+            showToast(message);
             setTimeout(() => {
                 window.location.href = "{{ route('login') }}";
             }, 2000);
