@@ -119,6 +119,11 @@ class CartController extends Controller
             return back()->with('error', 'Your cart is empty.');
         }
 
+        // Validate address before checkout
+        if (empty(auth()->user()->address)) {
+            return back()->with('error', 'Mohon lengkapi alamat Anda di profil sebelum melakukan checkout.');
+        }
+
         // Validate stock before checkout
         foreach ($cart as $id => $item) {
             $product = Product::find($item['product_id']);
@@ -138,6 +143,11 @@ class CartController extends Controller
 
         $user = auth()->user();
 
+        $customPhotoPath = null;
+        if ($request->hasFile('custom_photo')) {
+            $customPhotoPath = $request->file('custom_photo')->store('order_photos', 'public');
+        }
+
         DB::beginTransaction();
         try {
             // Create Order with QRIS payment
@@ -151,6 +161,7 @@ class CartController extends Controller
                 'payment_status' => 'awaiting_payment',
                 'courier_type' => $request->input('courier_type', 'standard'),
                 'shipping_cost' => $shippingCost,
+                'custom_photo' => $customPhotoPath,
             ]);
 
             // Create Order Items & deduct stock

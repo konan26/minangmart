@@ -158,49 +158,7 @@
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="py-32 px-6">
-        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
-            <div class="group">
-                <span class="feature-icon group-hover:scale-110 transition duration-300">🚚</span>
-                <h4 class="font-bold tracking-widest uppercase mb-2">FREE DELIVERY</h4>
-                <p class="text-xs text-gray-500 font-light">Free Delivery no Hassle</p>
-            </div>
-            <div class="group">
-                <span class="feature-icon group-hover:scale-110 transition duration-300">💬</span>
-                <h4 class="font-bold tracking-widest uppercase mb-2">Online Support</h4>
-                <p class="text-xs text-gray-500 font-light">Always Ready to Help</p>
-            </div>
-            <div class="group">
-                <span class="feature-icon group-hover:scale-110 transition duration-300">💰</span>
-                <h4 class="font-bold tracking-widest uppercase mb-2">Money Return</h4>
-                <p class="text-xs text-gray-500 font-light">Shop with Peace of Mind</p>
-            </div>
-            <div class="group">
-                <span class="feature-icon group-hover:scale-110 transition duration-300">🔄</span>
-                <h4 class="font-bold tracking-widest uppercase mb-2">Member Discount</h4>
-                <p class="text-xs text-gray-500 font-light">Exclusive Member Discount</p>
-            </div>
-        </div>
-    </section>
 
-    <!-- Our Blog Section -->
-    <section class="py-24 px-6 bg-black/20">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-5xl font-bold mb-16 text-center tracking-tight">OUR <span class="text-gold italic">BLOG</span></h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="rounded-3xl overflow-hidden glass hover:border-gold transition group">
-                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=800&auto=format&fit=crop" class="w-full h-64 object-cover group-hover:scale-105 transition duration-500" alt="Blog 1">
-                    <div class="p-8">
-                        <span class="text-gold text-xs font-bold uppercase tracking-widest">Tradition</span>
-                        <h3 class="text-xl font-bold mt-2 mb-4">The Secrets of Authenticity</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Discover how we keep the traditional flavors alive in every bite...</p>
-                    </div>
-                </div>
-                <!-- Add more blog items as needed -->
-            </div>
-        </div>
-    </section>
 
     <!-- Footer -->
     <footer class="py-20 border-t border-white/10 px-6">

@@ -84,6 +84,37 @@
                 </div>
             @endif
 
+            <!-- Order Items & Custom Photo -->
+            <div class="space-y-6 mb-8 animate-in-delay">
+                <!-- Product List -->
+                <div class="glass rounded-[2rem] border border-white/5 p-8">
+                    <p class="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold mb-4">Detail Pesanan</p>
+                    <div class="space-y-4">
+                        @foreach($order->items as $item)
+                        <div class="flex items-center justify-between text-sm">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-xl overflow-hidden border border-white/10 flex-shrink-0">
+                                    <img src="{{ str_starts_with($item->image, 'http') ? $item->image : asset('storage/' . $item->image) }}" class="w-full h-full object-cover" alt="{{ $item->product_name }}">
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-300">{{ $item->product_name }}</p>
+                                    <p class="text-[10px] text-gray-500">x{{ $item->quantity }} @ IDR {{ number_format($item->price, 0, ',', '.') }}</p>
+                                </div>
+                            </div>
+                            <span class="text-gray-400 font-bold">IDR {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                    
+                    @if($order->notes)
+                    <div class="mt-6 pt-6 border-t border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold mb-2">Catatan Tambahan</p>
+                        <p class="text-sm text-gray-400 italic font-medium leading-relaxed">"{{ $order->notes }}"</p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
             <!-- QRIS Card -->
             <div class="glass rounded-[2.5rem] border border-white/10 overflow-hidden qris-glow animate-in-delay">
                 <!-- Order Summary -->
@@ -228,28 +259,7 @@
                 @endif
             </div>
 
-            <!-- Order Items -->
-            <div class="mt-8 glass rounded-[2rem] border border-white/5 p-8 animate-in-delay-2">
-                <p class="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold mb-4">Detail Pesanan</p>
-                <div class="space-y-3">
-                    @foreach($order->items as $item)
-                    <div class="flex items-center justify-between text-sm">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 rounded-xl overflow-hidden border border-white/10 flex-shrink-0">
-                                <img src="{{ str_starts_with($item->image, 'http') ? $item->image : asset('storage/' . $item->image) }}" class="w-full h-full object-cover" alt="{{ $item->product_name }}">
-                            </div>
-                            <span class="font-bold text-gray-300">{{ $item->product_name }}</span>
-                            <span class="text-gray-600">x{{ $item->quantity }}</span>
-                        </div>
-                        <span class="text-gray-400 font-bold">IDR {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</span>
-                    </div>
-                    @endforeach
-                </div>
-                <div class="border-t border-white/5 mt-4 pt-4 flex justify-between">
-                    <span class="text-sm font-bold text-gray-500 uppercase tracking-widest">Total</span>
-                    <span class="text-lg font-black text-gold">IDR {{ number_format($order->total_price, 0, ',', '.') }}</span>
-                </div>
-            </div>
+
         </div>
     </main>
 

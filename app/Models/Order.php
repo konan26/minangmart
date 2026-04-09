@@ -23,6 +23,7 @@ class Order extends Model
         'courier_type',
         'shipping_cost',
         'petugas_id',
+        'custom_photo',
     ];
 
     protected $casts = [
